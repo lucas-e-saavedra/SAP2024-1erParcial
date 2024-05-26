@@ -1,6 +1,6 @@
 ﻿namespace DomainModel
 {
-    internal class Deposito: Establecimiento
+    public class Deposito: Establecimiento
     {
     }
 }

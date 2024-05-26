@@ -1,6 +1,6 @@
 ﻿namespace DomainModel
 {
-    internal class Tienda: Establecimiento
+    public class Tienda: Establecimiento
     {
     }
 }
