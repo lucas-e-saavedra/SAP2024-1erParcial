@@ -30,17 +30,21 @@ namespace Repository
 
         public void AgregarUno(Deposito unObjeto)
         {
+            int maxId = _listaDeDepositos.MaxBy(x => x.Id).Id;
+            unObjeto.Id = maxId + 1;
             _listaDeDepositos.Add(unObjeto);
         }
 
-        public void BorrarUno(Deposito unObjeto)
+        public void BorrarUno(int id)
         {
-            _listaDeDepositos.Remove(unObjeto);
+            Deposito objetoOriginal = _listaDeDepositos.First(x => x.Id == id);
+            _listaDeDepositos.Remove(objetoOriginal);
         }
 
         public void ModificarUno(Deposito unObjeto)
         {
-            int index = _listaDeDepositos.IndexOf(unObjeto);
+            Deposito objetoOriginal = _listaDeDepositos.First(x => x.Id == unObjeto.Id);
+            int index = _listaDeDepositos.IndexOf(objetoOriginal);
             _listaDeDepositos[index] = unObjeto;
         }
 

@@ -1,0 +1,55 @@
+﻿@page "/tiendas"
+@using BlazorApp1.DTOs
+@inject HttpClient Http
+
+<PageTitle>Tiendas</PageTitle>
+
+<h1>Tiendas <a class="btn btn-primary" href='/agregartienda'>Agregar</a></h1>
+
+<p>Estas son todas las Tiendas que tenemos.</p>
+
+@if (tiendas == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>Direccion</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var unaTienda in tiendas)
+            {
+                <tr>
+                    <td>@unaTienda.Id</td>
+                    <td>@unaTienda.Nombre</td>
+                    <td>@unaTienda.Direccion.Calle @unaTienda.Direccion.Numero, @unaTienda.Direccion.Localidad</td>
+                    <td><a class="btn btn-warning" href='/editarTienda/@unaTienda.Id'>Editar</a>
+                        <a class="btn btn-danger" @onclick="() => DeleteTienda(unaTienda.Id)">Borrar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Tienda[]? tiendas;
+
+    protected override async Task OnInitializedAsync()
+    {
+        tiendas = await Http.GetFromJsonAsync<Tienda[]>("https://localhost:7159/Tienda");
+    }
+
+    protected async Task DeleteTienda(int idTienda)
+    {
+        await Http.DeleteAsync("https://localhost:7159/Tienda/" + idTienda);
+        tiendas = await Http.GetFromJsonAsync<Tienda[]>("https://localhost:7159/Tienda");
+    }
+}

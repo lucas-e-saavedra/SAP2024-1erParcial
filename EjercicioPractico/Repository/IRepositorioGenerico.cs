@@ -8,7 +8,7 @@ namespace Repository
         public IEnumerable<T> ObtenerTodos();
         public T ObtenerUno(int id);
         public void AgregarUno(T unObjeto);
-        public void BorrarUno(T unObjeto); 
+        public void BorrarUno(int id); 
         public void ModificarUno(T unObjeto);
     }
 }

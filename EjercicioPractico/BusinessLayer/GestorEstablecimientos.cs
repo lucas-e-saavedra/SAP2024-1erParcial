@@ -30,6 +30,11 @@ namespace BusinessLayer
             return depositosRepositorio.ObtenerTodos();
         }
 
+        public Deposito GetUnDeposito(int id)
+        {
+            return depositosRepositorio.ObtenerUno(id);
+        }
+
         public bool AddDeposito(Deposito unDeposito)
         {
             try
@@ -43,9 +48,40 @@ namespace BusinessLayer
             }
         }
 
+        public bool UpdateDeposito(Deposito unDeposito)
+        {
+            try
+            {
+                depositosRepositorio.ModificarUno(unDeposito);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public bool RemoveDeposito(int idDeposito)
+        {
+            try
+            {
+                depositosRepositorio.BorrarUno(idDeposito);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
         public IEnumerable<Tienda> GetTiendas()
         {
             return tiendasRepositorio.ObtenerTodos();
+        }
+
+        public Tienda GetUnaTienda(int id)
+        {
+            return tiendasRepositorio.ObtenerUno(id);
         }
 
         public bool AddTienda(Tienda unaTienda)
@@ -61,5 +97,30 @@ namespace BusinessLayer
             }
         }
 
+        public bool UpdateTienda(Tienda unaTienda)
+        {
+            try
+            {
+                tiendasRepositorio.ModificarUno(unaTienda);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
+
+        public bool RemoveTienda(int idTienda)
+        {
+            try
+            {
+                tiendasRepositorio.BorrarUno(idTienda);
+                return true;
+            }
+            catch (Exception)
+            {
+                return false;
+            }
+        }
     }
 }

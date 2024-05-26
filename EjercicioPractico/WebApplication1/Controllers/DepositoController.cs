@@ -22,9 +22,27 @@ namespace WebApplication1.Controllers
             return GestorEstablecimientos.Instance.GetDepositos();
         }
 
+        [HttpGet("{idDeposito}", Name = "GetUnDeposito")]
+        public Deposito Get(int idDeposito)
+        {
+            return GestorEstablecimientos.Instance.GetUnDeposito(idDeposito);
+        }
+
         [HttpPost(Name = "AddDeposito")]
         public bool Add(Deposito unDeposito) { 
             return GestorEstablecimientos.Instance.AddDeposito(unDeposito);
+        }
+
+        [HttpPut(Name = "UpdateDeposito")]
+        public bool Update(Deposito unDeposito)
+        {
+            return GestorEstablecimientos.Instance.UpdateDeposito(unDeposito);
+        }
+
+        [HttpDelete("{idDeposito}", Name = "RemoveDeposito")]
+        public bool Remove(int idDeposito)
+        {
+            return GestorEstablecimientos.Instance.RemoveDeposito(idDeposito);
         }
     }
 }

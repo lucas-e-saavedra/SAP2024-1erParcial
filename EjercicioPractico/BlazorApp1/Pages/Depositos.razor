@@ -1,0 +1,55 @@
+﻿@page "/depositos"
+@using BlazorApp1.DTOs
+@inject HttpClient Http
+
+<PageTitle>Depositos</PageTitle>
+
+<h1>Depositos <a class="btn btn-primary" href='/agregardeposito'>Agregar</a></h1>
+
+<p>Estos son todos los depositos que tenemos.</p>
+
+@if (depositos == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>Direccion</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var unDeposito in depositos)
+            {
+                <tr>
+                    <td>@unDeposito.Id</td>
+                    <td>@unDeposito.Nombre</td>
+                    <td>@unDeposito.Direccion.Calle @unDeposito.Direccion.Numero, @unDeposito.Direccion.Localidad</td>
+                    <td><a class="btn btn-warning" href='/editardeposito/@unDeposito.Id'>Editar</a>
+                        <a class="btn btn-danger" @onclick="() => DeleteDeposito(unDeposito.Id)">Borrar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Deposito[]? depositos;
+
+    protected override async Task OnInitializedAsync()
+    {
+        depositos = await Http.GetFromJsonAsync<Deposito[]>("https://localhost:7159/Deposito");
+    }
+
+    protected async Task DeleteDeposito(int idDeposito)
+    {
+        await Http.DeleteAsync("https://localhost:7159/Deposito/" + idDeposito);
+        depositos = await Http.GetFromJsonAsync<Deposito[]>("https://localhost:7159/Deposito");
+    }
+}

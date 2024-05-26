@@ -26,17 +26,21 @@ namespace Repository
         }
         public void AgregarUno(Tienda unObjeto)
         {
+            int maxId = _listaDeTiendas.MaxBy(x => x.Id).Id;
+            unObjeto.Id = maxId + 1;
             _listaDeTiendas.Add(unObjeto);
         }
 
-        public void BorrarUno(Tienda unObjeto)
+        public void BorrarUno(int id)
         {
-            _listaDeTiendas.Remove(unObjeto);
+            Tienda objetoOriginal = _listaDeTiendas.First(x => x.Id == id);
+            _listaDeTiendas.Remove(objetoOriginal);
         }
 
         public void ModificarUno(Tienda unObjeto)
         {
-            int index = _listaDeTiendas.IndexOf(unObjeto);
+            Tienda objetoOriginal = _listaDeTiendas.First(x => x.Id == unObjeto.Id);
+            int index = _listaDeTiendas.IndexOf(objetoOriginal);
             _listaDeTiendas[index] = unObjeto;
         }
 

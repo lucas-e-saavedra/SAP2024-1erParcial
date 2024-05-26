@@ -1,0 +1,83 @@
+﻿@page "/agregardeposito"
+@page "/editardeposito/{Id}"
+@using BlazorApp1.DTOs
+@inject HttpClient Http
+@inject NavigationManager navigationManager
+
+<h3>UnDeposito: @Id</h3> 
+
+@if (unDeposito!=null)
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm Model="unDeposito" OnValidSubmit="UpdateDeposito">
+                <div class="form-group">
+                    <input type="hidden" @bind="@unDeposito.Id" />
+
+                    <label for="Nombre" class="control-label">Nombre</label>
+                    <input for="Nombre" class="form-control" @bind="unDeposito.Nombre" />
+
+                    <label for="DireccionCalle" class="control-label">Calle</label>
+                    <input for="DireccionCalle" class="form-control" @bind="unDeposito.Direccion.Calle" />
+                    
+                    <label for="DireccionNumero" class="control-label">Numero</label>
+                    <input for="DireccionNumero" class="form-control" @bind="unDeposito.Direccion.Numero" />
+                    
+                    <label for="DireccionLocalidad" class="control-label">Localidad</label>
+                    <input for="DireccionLocalidad" class="form-control" @bind="unDeposito.Direccion.Localidad" />
+
+                    <label for="DireccionCodigoPostal" class="control-label">Código postal</label>
+                    <input for="DireccionCodigoPostal" class="form-control" @bind="unDeposito.Direccion.CodigoPostal" />
+
+                    <label for="DireccionProvincia" class="control-label">Provincia</label>
+                    <input for="DireccionProvincia" class="form-control" @bind="unDeposito.Direccion.Provincia" />
+
+                    <DataAnnotationsValidator></DataAnnotationsValidator>
+                    <ValidationSummary></ValidationSummary>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Grabar</button>
+                    <button type="button" class="btn btn-danger" @onclick="() => Cancel()">Cancelar</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+} else
+{
+    <p>Cargando...</p>
+}
+
+
+
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    private Deposito? unDeposito;
+    protected override async Task OnInitializedAsync()
+    {
+        if (String.IsNullOrEmpty(Id)){
+            unDeposito = new Deposito();
+            unDeposito.Direccion = new Direccion();
+        } else
+            unDeposito = await Http.GetFromJsonAsync<Deposito>("https://localhost:7159/Deposito/"+Id);
+    }
+
+    protected async Task UpdateDeposito()
+    {
+        var json = System.Text.Json.JsonSerializer.Serialize(unDeposito);
+        var jsonString = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+        if(unDeposito.Id == 0 )
+            await Http.PostAsync("https://localhost:7159/Deposito", jsonString);
+        else 
+            await Http.PutAsync("https://localhost:7159/Deposito/", jsonString);
+        Cancel();
+    }
+
+    void Cancel()
+    {
+        navigationManager.NavigateTo("/depositos");
+    }
+}

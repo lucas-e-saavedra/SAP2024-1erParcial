@@ -22,11 +22,28 @@ namespace WebApplication1.Controllers
             return GestorEstablecimientos.Instance.GetTiendas();
         }
 
+        [HttpGet("{idTienda}", Name = "GetUnaTienda")]
+        public Tienda Get(int idTienda)
+        {
+            return GestorEstablecimientos.Instance.GetUnaTienda(idTienda);
+        }
 
         [HttpPost(Name = "AddTienda")]
         public bool Add(Tienda unaTienda)
         {
             return GestorEstablecimientos.Instance.AddTienda(unaTienda);
+        }
+
+        [HttpPut(Name = "UpdateTienda")]
+        public bool Update(Tienda unaTienda)
+        {
+            return GestorEstablecimientos.Instance.UpdateTienda(unaTienda);
+        }
+
+        [HttpDelete("{idTienda}", Name = "RemoveTienda")]
+        public bool Remove(int idTienda)
+        {
+            return GestorEstablecimientos.Instance.RemoveTienda(idTienda);
         }
     }
 }
