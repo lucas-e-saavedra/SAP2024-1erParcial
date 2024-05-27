@@ -25,6 +25,15 @@ namespace Repository
                 Precio = 2500
             };
             _listaDeProductos.Add(productoB);
+
+            Producto productoC = new Producto()
+            {
+                Id = 3,
+                Nombre = "Florero",
+                Descripcion = "Florero con forma de sifon",
+                Precio = 2000
+            };
+            _listaDeProductos.Add(productoC);
         }
 
         public void AgregarUno(Producto unObjeto)

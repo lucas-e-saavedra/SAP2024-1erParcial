@@ -39,6 +39,40 @@ namespace WebApplication1.Controllers
             }
         }
 
+        [HttpGet("xDestinoYCantidad/{cantidadRequerida}", Name = "GetMovimientosXDestinoYCantidad")]
+        public IEnumerable<Movimiento> Get(int cantidadRequerida, [FromQuery] int idDepositoDestino, [FromQuery] int idTiendaDestino, [FromQuery] bool orderAsc)
+        {
+            IEnumerable<Movimiento> movimientos = GestorMovimientos.Instance.GetMovimientos();
+
+            if (idDepositoDestino > 0)
+            {
+                movimientos = movimientos.Where(x => x.Destino is Deposito && x.Destino.Id == idDepositoDestino);
+            }
+
+            if (idTiendaDestino > 0)
+            {
+                movimientos = movimientos.Where(x => x.Destino is Tienda && x.Destino.Id == idTiendaDestino);
+            }
+
+            if (cantidadRequerida > 0)
+            {
+                movimientos = movimientos.GroupBy(m => m.Fecha.Date) // Agrupar por fecha
+                        .Where(g => g.Count() > cantidadRequerida)  // Filtrar grupos con más de un movimiento
+                        .SelectMany(g => g)         // Aplanar la lista de grupos en una sola lista de movimientos
+                        .ToList();
+
+            }
+
+            if (orderAsc)
+            {
+                return movimientos.OrderBy(x => x.Fecha);
+            }
+            else
+            {
+                return movimientos.OrderByDescending(x => x.Fecha);
+            }
+        }
+
         [HttpGet("tienda/{idTienda}", Name = "GetMovimientosXTienda")]
         public IEnumerable<Movimiento> Get(int idTienda, [FromQuery] bool orderAsc, [FromQuery] string? dateFrom = null, [FromQuery] string? dateTo = null)
         {

@@ -102,9 +102,9 @@ namespace Repository
             {
                 Id = 4,
                 Origen = depositos.First(),
-                Destino = tiendas.First(),
-                Fecha = DateTime.Now.AddDays(-16),
-                Detalle = detalleA,
+                Destino = depositos.Last(),
+                Fecha = DateTime.Now.AddDays(-17),
+                Detalle = detalleB,
                 Responsable = unUsuario
             };
             movs.Add(mov4);
@@ -113,9 +113,9 @@ namespace Repository
             {
                 Id = 5,
                 Origen = depositos.First(),
-                Destino = depositos.Last(),
-                Fecha = DateTime.Now.AddDays(-15),
-                Detalle = detalleB,
+                Destino = tiendas.First(),
+                Fecha = DateTime.Now.AddDays(-16),
+                Detalle = detalleA,
                 Responsable = unUsuario
             };
             movs.Add(mov5);
@@ -124,12 +124,34 @@ namespace Repository
             {
                 Id = 6,
                 Origen = depositos.First(),
+                Destino = depositos.Last(),
+                Fecha = DateTime.Now.AddDays(-15),
+                Detalle = detalleB,
+                Responsable = unUsuario
+            };
+            movs.Add(mov6);
+
+            Movimiento mov7 = new Movimiento()
+            {
+                Id = 7,
+                Origen = depositos.First(),
                 Destino = tiendas.First(),
                 Fecha = DateTime.Now.AddDays(-10),
                 Detalle = detalleA,
                 Responsable = unUsuario
             };
-            movs.Add(mov6);
+            movs.Add(mov7);
+
+            Movimiento mov8 = new Movimiento()
+            {
+                Id = 8,
+                Origen = depositos.First(),
+                Destino = tiendas.First(),
+                Fecha = DateTime.Now.AddDays(-10),
+                Detalle = detalleB,
+                Responsable = unUsuario
+            };
+            movs.Add(mov8);
             return movs;
         }
         #endregion

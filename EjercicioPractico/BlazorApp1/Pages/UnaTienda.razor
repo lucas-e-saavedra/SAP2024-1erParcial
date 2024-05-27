@@ -81,6 +81,7 @@
         if (String.IsNullOrEmpty(Id)){
             unaTienda = new Tienda();
             unaTienda.Direccion = new Direccion();
+            unaTienda.Stock = new List<StockItem>();
         } else
             unaTienda = await Http.GetFromJsonAsync<Tienda>("https://localhost:7159/Tienda/" + Id);
     }

@@ -39,8 +39,15 @@ namespace BusinessLayer
                         throw new Exception("No se puede enviar esta cantidad xq no hay suficiente");
                     } else { 
                         itemDisponible.cantidad = itemDisponible.cantidad - itemAEnviar.cantidad;
-                        StockItem itemRecibido = unMovimiento.Destino.Stock.First(x => x.producto.Id == itemAEnviar.producto.Id);
-                        itemRecibido.cantidad = itemRecibido.cantidad + itemAEnviar.cantidad;
+                        if (unMovimiento.Destino.Stock.Any(x => x.producto.Id == itemAEnviar.producto.Id))
+                        {
+                            StockItem itemRecibido = unMovimiento.Destino.Stock.First(x => x.producto.Id == itemAEnviar.producto.Id);
+                            itemRecibido.cantidad = itemRecibido.cantidad + itemAEnviar.cantidad;
+                        }
+                        else 
+                        {
+                            unMovimiento.Destino.Stock.Add(itemAEnviar);
+                        }
                     }
                 }
 

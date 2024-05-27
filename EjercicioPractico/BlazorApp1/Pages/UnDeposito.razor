@@ -81,6 +81,7 @@
         if (String.IsNullOrEmpty(Id)){
             unDeposito = new Deposito();
             unDeposito.Direccion = new Direccion();
+            unDeposito.Stock = new List<StockItem>();
         } else
             unDeposito = await Http.GetFromJsonAsync<Deposito>("https://localhost:7159/Deposito/"+Id);
     }
