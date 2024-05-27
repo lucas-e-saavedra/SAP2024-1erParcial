@@ -57,7 +57,7 @@ namespace WebApplication1.Controllers
             if (cantidadRequerida > 0)
             {
                 movimientos = movimientos.GroupBy(m => m.Fecha.Date) // Agrupar por fecha
-                        .Where(g => g.Count() > cantidadRequerida)  // Filtrar grupos con más de un movimiento
+                        .Where(g => g.Count() > cantidadRequerida)  // Filtrar grupos con mas de X movimientos en ese dia
                         .SelectMany(g => g)         // Aplanar la lista de grupos en una sola lista de movimientos
                         .ToList();
 
