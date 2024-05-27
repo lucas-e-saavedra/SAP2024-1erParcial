@@ -1,0 +1,49 @@
+﻿@page "/movimientos"
+@using BlazorApp1.DTOs
+@inject HttpClient Http
+
+<PageTitle>Movimientos realizados</PageTitle>
+
+<h1>Movimientos</h1>
+
+<p>Estos son todos los movimientos realizados entre establecimientos.</p>
+
+@if (movimientos == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Origen</th>
+                <th>Destino</th>
+                <th>Cantidad de productos</th>
+                <th>Responsable</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var unMovimiento in movimientos)
+            {
+                <tr>
+                    <td>@unMovimiento.Id</td>
+                    <td>@unMovimiento.Origen.Nombre</td>
+                    <td>@unMovimiento.Destino.Nombre</td>
+                    <td>@unMovimiento.Detalle.Sum(x => x.cantidad)</td>
+                    <td>@unMovimiento.Responsable.Nombre</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Movimiento[]? movimientos;
+
+    protected override async Task OnInitializedAsync()
+    {
+        movimientos = await Http.GetFromJsonAsync<Movimiento[]>("https://localhost:7159/Movimiento");
+    }
+}

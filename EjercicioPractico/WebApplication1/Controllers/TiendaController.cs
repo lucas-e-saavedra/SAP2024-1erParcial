@@ -37,7 +37,7 @@ namespace WebApplication1.Controllers
         [HttpPut(Name = "UpdateTienda")]
         public bool Update(Tienda unaTienda)
         {
-            return GestorEstablecimientos.Instance.UpdateTienda(unaTienda);
+            return GestorEstablecimientos.Instance.UpdateEstablecimiento(unaTienda);
         }
 
         [HttpDelete("{idTienda}", Name = "RemoveTienda")]

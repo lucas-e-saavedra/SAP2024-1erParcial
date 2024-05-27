@@ -1,0 +1,73 @@
+﻿@page "/agregarproducto"
+@page "/editarproducto/{Id}"
+@using BlazorApp1.DTOs
+@inject HttpClient Http
+@inject NavigationManager navigationManager
+
+<h3>UnProducto: @Id</h3> 
+
+@if (unProducto!=null)
+{
+    <div class="row">
+        <div class="col-md-4">
+            <EditForm Model="unProducto" OnValidSubmit="UpdateProducto">
+                <div class="form-group">
+                    <input type="hidden" @bind="@unProducto.Id" />
+
+                    <label for="Nombre" class="control-label">Nombre</label>
+                    <input for="Nombre" class="form-control" @bind="unProducto.Nombre" />
+
+                    <label for="Descripcion" class="control-label">Descripcion</label>
+                    <input for="Descripcion" class="form-control" @bind="unProducto.Descripcion" />
+
+                    <label for="Precio" class="control-label">Precio</label>
+                    <input for="Precio" class="form-control" @bind="unProducto.Precio" />
+
+                    <DataAnnotationsValidator></DataAnnotationsValidator>
+                    <ValidationSummary></ValidationSummary>
+                </div>
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary">Grabar</button>
+                    <button type="button" class="btn btn-danger" @onclick="() => Cancel()">Cancelar</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+} else
+{
+    <p>Cargando...</p>
+}
+
+
+
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    private Producto? unProducto;
+    protected override async Task OnInitializedAsync()
+    {
+        if (String.IsNullOrEmpty(Id))
+            unProducto = new Producto();
+        else
+            unProducto = await Http.GetFromJsonAsync<Producto>("https://localhost:7159/Producto/"+Id);
+    }
+
+    protected async Task UpdateProducto()
+    {
+        var json = System.Text.Json.JsonSerializer.Serialize(unProducto);
+        var jsonString = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+        if(unProducto.Id == 0 )
+            await Http.PostAsync("https://localhost:7159/Producto", jsonString);
+        else 
+            await Http.PutAsync("https://localhost:7159/Producto/", jsonString);
+        Cancel();
+    }
+
+    void Cancel()
+    {
+        navigationManager.NavigateTo("/productos");
+    }
+}

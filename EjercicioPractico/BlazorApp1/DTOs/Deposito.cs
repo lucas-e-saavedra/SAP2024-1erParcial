@@ -1,12 +1,10 @@
 ﻿namespace BlazorApp1.DTOs
 {
-    public class Deposito
+    public class Deposito: Establecimiento
     {
-        public int Id { get; set; }
-
-        public string? Nombre { get; set; }
-
         public Direccion? Direccion { get; set; }
+
+        public List<StockItem>? Stock { get; set; }
 
     }
 }

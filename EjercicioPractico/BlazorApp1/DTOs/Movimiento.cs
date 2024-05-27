@@ -1,4 +1,4 @@
-﻿namespace DomainModel
+﻿namespace BlazorApp1.DTOs
 {
     public class Movimiento
     {
@@ -8,6 +8,5 @@
         public DateTime Fecha { get; set; }
         public List<StockItem> Detalle { get; set; }
         public Usuario Responsable { get; set; }
-
     }
 }

@@ -1,0 +1,58 @@
+﻿@page "/productos"
+@using BlazorApp1.DTOs
+@inject HttpClient Http
+
+<PageTitle>Productos</PageTitle>
+
+<h1>Productos <a class="btn btn-primary" href='/agregarproducto'>Agregar</a></h1>
+
+<p>Estos son todos los productos que ofrecemos.</p>
+
+@if (productos == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Precio</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var unProducto in productos)
+            {
+                <tr>
+                    <td>@unProducto.Id</td>
+                    <td>@unProducto.Nombre</td>
+                    <td>@unProducto.Descripcion</td>
+                    <td>@unProducto.Precio</td>
+                    <td>
+                        <a class="btn btn-warning" href='/editarproducto/@unProducto.Id'>Editar</a>
+                        <a class="btn btn-danger" @onclick="() => DeleteProducto(unProducto.Id)">Borrar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private Producto[]? productos;
+
+    protected override async Task OnInitializedAsync()
+    {
+        productos = await Http.GetFromJsonAsync<Producto[]>("https://localhost:7159/Producto");
+    }
+
+    protected async Task DeleteProducto(int idProducto)
+    {
+        await Http.DeleteAsync("https://localhost:7159/Producto/" + idProducto);
+        productos = await Http.GetFromJsonAsync<Producto[]>("https://localhost:7159/Producto");
+    }
+}

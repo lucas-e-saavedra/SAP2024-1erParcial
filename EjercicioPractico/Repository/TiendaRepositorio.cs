@@ -5,8 +5,10 @@ namespace Repository
     public class TiendaRepositorio : IRepositorioGenerico<Tienda>
     {
         private IList<Tienda> _listaDeTiendas;
+        private ProductoRepositorio productoRepositorio;
         public TiendaRepositorio() { 
             _listaDeTiendas = new List<Tienda>();
+            productoRepositorio = new ProductoRepositorio();
 
             Direccion direccionTienda1 = new Direccion() { 
                 Calle = "Parana",
@@ -15,18 +17,30 @@ namespace Repository
                 CodigoPostal = "B1607",
                 Provincia = "Buenos Aires"
             };
-            Producto unProducto = new Producto();
+            IEnumerable<Producto> productos = productoRepositorio.ObtenerTodos();
+            List<StockItem> stockItems = new List<StockItem>();
+            foreach (var producto in productos)
+            {
+                StockItem item = new StockItem() { 
+                    producto = producto,
+                    cantidad = 10
+                };
+                stockItems.Add(item);
+            }
+
             Tienda unaTienda = new Tienda() { 
                 Id = 1,
                 Nombre = "Valusel Villa Adelina",
-                Direccion = direccionTienda1
+                Direccion = direccionTienda1,
+                Stock = stockItems
             };
 
             _listaDeTiendas.Add(unaTienda);
         }
         public void AgregarUno(Tienda unObjeto)
         {
-            int maxId = _listaDeTiendas.MaxBy(x => x.Id).Id;
+            var lastItem = _listaDeTiendas.MaxBy(x => x.Id);
+            int maxId = lastItem != null ? lastItem.Id : 0;
             unObjeto.Id = maxId + 1;
             _listaDeTiendas.Add(unObjeto);
         }

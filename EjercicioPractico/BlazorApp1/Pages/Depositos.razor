@@ -30,7 +30,9 @@ else
                     <td>@unDeposito.Id</td>
                     <td>@unDeposito.Nombre</td>
                     <td>@unDeposito.Direccion.Calle @unDeposito.Direccion.Numero, @unDeposito.Direccion.Localidad</td>
-                    <td><a class="btn btn-warning" href='/editardeposito/@unDeposito.Id'>Editar</a>
+                    <td>
+                        <a class="btn btn-success" href='/enviardesdedeposito/@unDeposito.Id'>Enviar</a>
+                        <a class="btn btn-warning" href='/editardeposito/@unDeposito.Id'>Editar</a>
                         <a class="btn btn-danger" @onclick="() => DeleteDeposito(unDeposito.Id)">Borrar</a>
                     </td>
                 </tr>

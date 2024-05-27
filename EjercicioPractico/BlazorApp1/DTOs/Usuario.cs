@@ -1,4 +1,4 @@
-﻿namespace DomainModel
+﻿namespace BlazorApp1.DTOs
 {
     public class Usuario
     {

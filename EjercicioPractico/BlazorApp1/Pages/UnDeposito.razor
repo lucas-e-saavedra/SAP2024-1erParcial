@@ -4,7 +4,7 @@
 @inject HttpClient Http
 @inject NavigationManager navigationManager
 
-<h3>UnDeposito: @Id</h3> 
+<h3>UnDeposito: @Id <a class="btn btn-success" href='/enviardesdedeposito/@unDeposito?.Id'>Enviar</a></h3>
 
 @if (unDeposito!=null)
 {
@@ -42,6 +42,27 @@
             </EditForm>
         </div>
     </div>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Precio</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var unItem in unDeposito.Stock)
+            {
+                <tr>
+                    <td>@unItem.producto.Id</td>
+                    <td>@unItem.producto.Nombre</td>
+                    <td>@unItem.producto.Precio</td>
+                    <td>@unItem.cantidad</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 } else
 {
     <p>Cargando...</p>

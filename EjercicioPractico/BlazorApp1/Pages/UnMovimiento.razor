@@ -1,0 +1,169 @@
+﻿@page "/enviardesdedeposito/{Id}"
+@using BlazorApp1.DTOs
+@inject HttpClient Http
+@inject NavigationManager navigationManager
+@inject IJSRuntime JS
+
+@if (depositoOrigen != null)
+{
+    <h2>Enviar desde: @depositoOrigen.Nombre</h2>
+    <h3>Stock actual</h3>
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>Descripción</th>
+                <th>Precio</th>
+                <th>Enviar</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var unItem in depositoOrigen.Stock)
+            {
+                <tr>
+                    <td>@unItem.producto.Id</td>
+                    <td>@unItem.producto.Nombre</td>
+                    <td>@unItem.producto.Descripcion</td>
+                    <td>@unItem.cantidad</td>
+                    <td>
+                        <a class="btn btn-info" @onclick="() => AgregarProductoAlEnvío(unItem)">Enviar</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+
+    <h3>Envío</h3>
+    <label for="TipoDestino">Tipo de Destino</label>
+    <select id="TipoDestino" class="form-control" @onchange="BuscarDestinos">
+        <option value="">Seleccione tipo de destino</option>
+        <option value="D">Depósito</option>
+        <option value="T">Tienda</option>
+    </select>
+    <EditForm Model="unMovimiento" OnValidSubmit="EnviarMovimiento">
+        @if (destinos != null && tipoDestinoSeleccionado != "")
+        {
+            <label for="DestinoSeleccionado">Destino</label>
+            <InputSelect id="DestinoSeleccionado" @bind-Value="destinoSeleccionado" class="form-control">
+                <option value="0">Seleccione a donde enviar</option>
+                @foreach (var unDestino in destinos)
+                {
+                    <option value="@unDestino.Id">@unDestino.Nombre</option>
+                }
+            </InputSelect>
+        } else
+        {
+            <p>cargando destinos...</p>
+        }
+
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Nombre</th>
+                    <th>Descripción</th>
+                    <th>Cantidad</th>
+                    <th>Quitar</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var unItem in unMovimiento.Detalle)
+                {
+                    <tr>
+                        <td>@unItem.producto.Id</td>
+                        <td>@unItem.producto.Nombre</td>
+                        <td>@unItem.producto.Descripcion</td>
+                        <td>
+                            <InputNumber @bind-Value="unItem.cantidad" class="form-control" />
+                        </td>
+                        <td>
+                            <a class="btn btn-danger" @onclick="() => QuitarProductoDelEnvío(unItem)">Quitar</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+        <div class="form-group">
+            <button type="submit" class="btn btn-primary">Grabar</button>
+            <button type="button" class="btn btn-danger" @onclick="Cancel">Cancelar</button>
+        </div>
+    </EditForm>
+} else
+{
+    <p>Cargando...</p>
+}
+
+
+
+
+@code {
+    [Parameter]
+    public string Id { get; set; }
+
+    private Deposito? depositoOrigen;
+    private Movimiento unMovimiento;
+    private List<Establecimiento>? destinos = null;
+    private string tipoDestinoSeleccionado = ""; 
+    private int destinoSeleccionado;
+
+    protected override async Task OnInitializedAsync()
+    {
+        depositoOrigen = await Http.GetFromJsonAsync<Deposito>("https://localhost:7159/Deposito/" + Id);
+        destinos = new List<Establecimiento>();
+
+        unMovimiento = new Movimiento();
+        unMovimiento.Detalle = new List<StockItem>();
+    }
+
+    protected void AgregarProductoAlEnvío(StockItem unItem)
+    {
+        depositoOrigen.Stock.Remove(unItem);
+        unMovimiento.Detalle.Add(unItem);
+    }
+    protected void QuitarProductoDelEnvío(StockItem unItem)
+    {
+        depositoOrigen.Stock.Add(unItem);
+        unMovimiento.Detalle.Remove(unItem);
+    }
+
+    async Task BuscarDestinos(ChangeEventArgs eventArgs)
+    {
+        tipoDestinoSeleccionado = eventArgs.Value.ToString();
+        destinos.Clear();
+        if (tipoDestinoSeleccionado == "D")
+        {
+            var depositos = await Http.GetFromJsonAsync<Deposito[]>("https://localhost:7159/Deposito");
+            foreach (var deposito in depositos)
+            {
+                if (deposito.Id != depositoOrigen.Id)
+                {
+                    destinos.Add(deposito);
+                }
+            }
+        }
+        else if (tipoDestinoSeleccionado == "T")
+        {
+            var tiendas = await Http.GetFromJsonAsync<Tienda[]>("https://localhost:7159/Tienda");
+            destinos.AddRange(tiendas);
+        }
+    }
+
+    protected async Task EnviarMovimiento()
+    {
+        if (destinoSeleccionado > 0)
+        {
+            var json = System.Text.Json.JsonSerializer.Serialize(unMovimiento.Detalle);
+            var jsonString = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+            string paramDestino = tipoDestinoSeleccionado == "D" ? "&IdDepositoDestino=" : "&IdTiendaDestino=";
+            paramDestino += destinoSeleccionado.ToString();
+            await Http.PostAsync("https://localhost:7159/Movimiento?IdOrigen=" + Id + paramDestino, jsonString);
+            Cancel();
+        }
+    }
+
+    void Cancel()
+    {
+        navigationManager.NavigateTo("/editardeposito/"+Id);
+    }
+}

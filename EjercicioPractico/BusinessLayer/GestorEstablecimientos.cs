@@ -48,7 +48,7 @@ namespace BusinessLayer
             }
         }
 
-        public bool UpdateDeposito(Deposito unDeposito)
+        public bool UpdateEstablecimiento(Deposito unDeposito)
         {
             try
             {
@@ -97,7 +97,7 @@ namespace BusinessLayer
             }
         }
 
-        public bool UpdateTienda(Tienda unaTienda)
+        public bool UpdateEstablecimiento(Tienda unaTienda)
         {
             try
             {
@@ -121,6 +121,15 @@ namespace BusinessLayer
             {
                 return false;
             }
+        }
+
+        public bool UpdateEstablecimiento(Establecimiento unEstablecimiento) {
+            if (unEstablecimiento is Deposito)
+                return UpdateEstablecimiento((Deposito)unEstablecimiento);
+            else if (unEstablecimiento is Tienda)
+                return UpdateEstablecimiento((Tienda)unEstablecimiento);
+            else 
+                return false;
         }
     }
 }
