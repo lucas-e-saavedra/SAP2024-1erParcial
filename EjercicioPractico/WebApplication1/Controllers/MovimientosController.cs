@@ -1,6 +1,8 @@
 using BusinessLayer;
 using DomainModel;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Globalization;
 
 namespace WebApplication1.Controllers
 {
@@ -37,11 +39,34 @@ namespace WebApplication1.Controllers
             }
         }
 
-        /*[HttpGet("{idTienda}", Name = "GetUnaTienda")]
-        public Tienda Get(int idTienda)
+        [HttpGet("tienda/{idTienda}", Name = "GetMovimientosXTienda")]
+        public IEnumerable<Movimiento> Get(int idTienda, [FromQuery] bool orderAsc, [FromQuery] string? dateFrom = null, [FromQuery] string? dateTo = null)
         {
-            return GestorMovimie.Instance.GetUnaTienda(idTienda);
-        }*/
+            IEnumerable<Movimiento> movimientos = GestorMovimientos.Instance.GetMovimientos();
+            movimientos = movimientos.Where(x => x.Destino is Tienda && x.Destino.Id == idTienda);
+
+            if (!String.IsNullOrWhiteSpace(dateFrom)) {
+                DateOnly dateOnlyFrom = DateOnly.ParseExact(dateFrom, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                DateTime datetimeFrom = dateOnlyFrom.ToDateTime(TimeOnly.MinValue);
+                movimientos = movimientos.Where(x => x.Fecha > datetimeFrom);
+            }
+
+            if (!String.IsNullOrWhiteSpace(dateTo))
+            {
+                DateOnly dateOnlyTo = DateOnly.ParseExact(dateTo, "yyyy-MM-dd", CultureInfo.InvariantCulture);
+                DateTime datetimeTo = dateOnlyTo.ToDateTime(TimeOnly.MaxValue);
+                movimientos = movimientos.Where(x => x.Fecha < datetimeTo);
+            }
+
+            if (orderAsc)
+            {
+                return movimientos.OrderBy(x => x.Fecha);
+            }
+            else
+            {
+                return movimientos.OrderByDescending(x => x.Fecha);
+            }
+        }
 
         [HttpPost(Name = "AddMovimientoADeposito")]
         public bool Send([FromQuery]int IdOrigen, [FromQuery] int IdDepositoDestino, [FromQuery] int IdTiendaDestino, StockItem[] detalle)

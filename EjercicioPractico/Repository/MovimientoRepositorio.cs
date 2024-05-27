@@ -119,6 +119,17 @@ namespace Repository
                 Responsable = unUsuario
             };
             movs.Add(mov5);
+
+            Movimiento mov6 = new Movimiento()
+            {
+                Id = 6,
+                Origen = depositos.First(),
+                Destino = tiendas.First(),
+                Fecha = DateTime.Now.AddDays(-10),
+                Detalle = detalleA,
+                Responsable = unUsuario
+            };
+            movs.Add(mov6);
             return movs;
         }
         #endregion
