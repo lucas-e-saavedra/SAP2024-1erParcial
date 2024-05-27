@@ -1,6 +1,7 @@
 ﻿@page "/movimientos"
 @using BlazorApp1.DTOs
 @inject HttpClient Http
+@inject IJSRuntime JS
 
 <PageTitle>Movimientos realizados</PageTitle>
 
@@ -14,12 +15,41 @@
 }
 else
 {
+    <div class="row">
+        <div class="col-md-4">
+            <label for="TipoDestino">Tipo de Destino</label>
+            <select id="TipoDestino" class="form-control" @onchange="BuscarDestinos">
+                <option value="">Seleccione tipo de destino</option>
+                <option value="D">Depósito</option>
+                <option value="T">Tienda</option>
+            </select>
+        </div>
+        @if (destinos != null && tipoDestinoSeleccionado != "")
+        {
+            <div class="col-md-4">
+                <label for="DestinoSeleccionado">Destino</label>
+                <select id="DestinoSeleccionado" class="form-control" @onchange="SeleccionarDestino">
+                    <option value="0">Seleccione a donde enviar</option>
+                    @foreach (var unDestino in destinos)
+                    {
+                        <option value="@unDestino.Id">@unDestino.Nombre</option>
+                    }
+                </select>
+            </div>
+            <div class="col-md-4">
+                <a class="btn btn-info" @onclick="BuscarMovimientos">Filtrar</a>
+                <a class="btn btn-info" @onclick="BuscarTodos">Ver Todos</a>
+            </div>
+        }
+    </div>
+
     <table class="table">
         <thead>
             <tr>
                 <th>Id</th>
                 <th>Origen</th>
                 <th>Destino</th>
+                <th>Fecha</th>
                 <th>Cantidad de productos</th>
                 <th>Responsable</th>
             </tr>
@@ -31,7 +61,8 @@ else
                     <td>@unMovimiento.Id</td>
                     <td>@unMovimiento.Origen.Nombre</td>
                     <td>@unMovimiento.Destino.Nombre</td>
-                    <td>@unMovimiento.Detalle.Sum(x => x.cantidad)</td>
+                    <td>@unMovimiento.Fecha</td>
+                    <td>@unMovimiento.Resumen()</td>
                     <td>@unMovimiento.Responsable.Nombre</td>
                 </tr>
             }
@@ -41,8 +72,56 @@ else
 
 @code {
     private Movimiento[]? movimientos;
+    private List<Establecimiento>? destinos = null;
+    private string tipoDestinoSeleccionado = "";
+    private int destinoSeleccionado;
 
     protected override async Task OnInitializedAsync()
+    {
+        destinos = new List<Establecimiento>();
+        movimientos = await Http.GetFromJsonAsync<Movimiento[]>("https://localhost:7159/Movimiento" );
+    }
+
+    async Task BuscarDestinos(ChangeEventArgs eventArgs)
+    {
+        tipoDestinoSeleccionado = eventArgs.Value.ToString();
+        destinos.Clear();
+        if (tipoDestinoSeleccionado == "D")
+        {
+            var depositos = await Http.GetFromJsonAsync<Deposito[]>("https://localhost:7159/Deposito");
+            destinos.AddRange(depositos);
+        }
+        else if (tipoDestinoSeleccionado == "T")
+        {
+            var tiendas = await Http.GetFromJsonAsync<Tienda[]>("https://localhost:7159/Tienda");
+            destinos.AddRange(tiendas);
+        }
+    }
+
+    async Task SeleccionarDestino(ChangeEventArgs eventArgs)
+    {
+        //JS.InvokeVoidAsync("alert", $"FiltrarMovimientos:");
+        destinoSeleccionado = int.Parse(eventArgs.Value.ToString());
+    }
+
+    async Task BuscarMovimientos()
+    {
+        //JS.InvokeVoidAsync("alert", $"BuscarMovimientos:");
+        string queryparams = "?orderAsc=false" ;// ?"true" :"false";
+
+        if (tipoDestinoSeleccionado == "D")
+        {
+            queryparams += "&idDepositoDestino=" + destinoSeleccionado;
+        }
+        if (tipoDestinoSeleccionado == "T")
+        {
+            queryparams += "&idTiendaDestino=" + destinoSeleccionado;
+        }
+        string urlmovs = "https://localhost:7159/Movimiento" + queryparams;
+        movimientos = await Http.GetFromJsonAsync<Movimiento[]>(urlmovs);
+    }
+
+    async Task BuscarTodos()
     {
         movimientos = await Http.GetFromJsonAsync<Movimiento[]>("https://localhost:7159/Movimiento");
     }

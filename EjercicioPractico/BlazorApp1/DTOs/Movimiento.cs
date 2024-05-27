@@ -8,5 +8,9 @@
         public DateTime Fecha { get; set; }
         public List<StockItem> Detalle { get; set; }
         public Usuario Responsable { get; set; }
+
+        public string Resumen() {
+            return String.Join(", ", Detalle);
+        }
     }
 }

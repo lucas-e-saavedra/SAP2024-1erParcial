@@ -15,11 +15,26 @@ namespace WebApplication1.Controllers
             _logger = logger;
             
         }
-
+        
         [HttpGet(Name = "GetMovimientos")]
-        public IEnumerable<Movimiento> Get()
+        public IEnumerable<Movimiento> Get([FromQuery] int idDepositoDestino, [FromQuery] int idTiendaDestino, [FromQuery] bool orderAsc)
         {
-            return GestorMovimientos.Instance.GetMovimientos();
+            IEnumerable<Movimiento> movimientos = GestorMovimientos.Instance.GetMovimientos();
+
+            if (idDepositoDestino > 0) { 
+                movimientos = movimientos.Where(x => x.Destino is Deposito && x.Destino.Id == idDepositoDestino);
+            }
+
+            if (idTiendaDestino > 0)
+            {
+                movimientos = movimientos.Where(x => x.Destino is Tienda && x.Destino.Id == idTiendaDestino);
+            }
+
+            if (orderAsc) {
+                return movimientos.OrderBy(x => x.Fecha);
+            } else {
+                return movimientos.OrderByDescending(x => x.Fecha);
+            }
         }
 
         /*[HttpGet("{idTienda}", Name = "GetUnaTienda")]
