@@ -2,6 +2,7 @@ using BusinessLayer;
 using DomainModel;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Seguridad;
 using System.Globalization;
 
 namespace WebApplication1.Controllers
@@ -103,8 +104,12 @@ namespace WebApplication1.Controllers
         }
 
         [HttpPost(Name = "AddMovimientoADeposito")]
-        public bool Send([FromQuery]int IdOrigen, [FromQuery] int IdDepositoDestino, [FromQuery] int IdTiendaDestino, StockItem[] detalle)
+        public bool Send([FromHeader]Guid userGuid, [FromQuery]int IdOrigen, [FromQuery] int IdDepositoDestino, [FromQuery] int IdTiendaDestino, StockItem[] detalle)
         {
+            Usuario? usuario = GestorSeguridad.Instance.BuscarUsuario(userGuid);
+            if (usuario == null)
+                return false;
+
             Deposito origen = GestorEstablecimientos.Instance.GetUnDeposito(IdOrigen);
             Establecimiento destino = null;
             if (IdDepositoDestino > 0 && IdTiendaDestino == 0) { 
@@ -116,16 +121,13 @@ namespace WebApplication1.Controllers
             }
             
             DateTime fecha = DateTime.Now;
-            Usuario unUsuario = new Usuario() { 
-                Nombre = "Lucas"
-            };
 
             Movimiento unMovimiento = new Movimiento() { 
                 Origen = origen,
                 Destino = destino,
                 Fecha = fecha,
                 Detalle = detalle.ToList(),
-                Responsable = unUsuario
+                Responsable = usuario
             };
 
             return GestorMovimientos.Instance.AddMovimiento(unMovimiento);

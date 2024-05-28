@@ -11,9 +11,9 @@
 @if (user != null && user.Identity!=null)
 {
     <p>Guid: @user.FindFirst(ClaimTypes.NameIdentifier)?.Value</p>
-    <p>Nombre, @user.FindFirst(ClaimTypes.Name)?.Value</p>
-    <p>Apellido, @user.FindFirst(ClaimTypes.Surname)?.Value</p>
-    <p>Email, @user.FindFirst(ClaimTypes.Email)?.Value</p>
+    <p>Nombre: @user.FindFirst(ClaimTypes.Name)?.Value</p>
+    <p>Apellido: @user.FindFirst(ClaimTypes.Surname)?.Value</p>
+    <p>Email: @user.FindFirst(ClaimTypes.Email)?.Value</p>
 } else
 {
     <p>Welcome to your new app.</p>
@@ -22,8 +22,7 @@
 
 
 @code{
-    private ClaimsPrincipal user;
-    private string bla;
+    private ClaimsPrincipal? user;
 
     protected override async Task OnInitializedAsync()
     {

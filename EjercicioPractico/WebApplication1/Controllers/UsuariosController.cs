@@ -20,16 +20,10 @@ namespace WebApplication1.Controllers
             
         }
         
-        [HttpGet("login",Name = "IniciarSesion2")]
+        [HttpGet("login",Name = "IniciarSesion")]
         public Usuario Get([FromQuery] string user, [FromQuery] string password)
         {
             return GestorSeguridad.Instance.ValidarUsuario(user, password);
-        }
-
-        [HttpPost("login", Name = "IniciarSesion")]
-        public Usuario Post([FromBody] Credenciales user)
-        {
-            return GestorSeguridad.Instance.ValidarUsuario(user.email, user.password);
         }
     }
 

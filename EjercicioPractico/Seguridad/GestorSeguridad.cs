@@ -30,15 +30,18 @@ namespace Seguridad
             }
         }
 
-        public Usuario? ValidarUsuario(string email, string password)
+        public Usuario? BuscarUsuario(Guid guid) { 
+            return usuariosRepositorio.ObtenerTodos().FirstOrDefault(x => x.UserGuid == guid);
+        }
+        public Usuario ValidarUsuario(string email, string password)
         {
             Usuario existeUsuario = usuariosRepositorio.ObtenerTodos().FirstOrDefault(x => x.Email == email);
             if (existeUsuario==null)
-                return null;
+                return new Usuario();
 
             UsuarioYCredenciales usuarioCompleto = usuariosRepositorio.ObtenerUno(existeUsuario.UserGuid);
             if (usuarioCompleto==null || usuarioCompleto.Password != password)
-                return null;
+                return new Usuario();
             else
                 return usuarioCompleto;
         }

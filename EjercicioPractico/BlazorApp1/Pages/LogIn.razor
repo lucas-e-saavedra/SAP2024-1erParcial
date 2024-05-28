@@ -29,8 +29,8 @@
 
     private async Task HandleLogin()
     {
-        showError = false;
-        var usuario = await Http.GetFromJsonAsync<Usuario>($"https://localhost:7159/Usuarios/login?user={email}&password={password}");
+        showError = false;      
+        var usuario = await Http.GetFromJsonAsync<Usuario?>($"https://localhost:7159/Usuarios/login?user={email}&password={password}");
         if (usuario!=null && usuario.UserGuid != Guid.Empty)
         {
             authStateProvider.MarkUserAsAuthenticated(usuario);

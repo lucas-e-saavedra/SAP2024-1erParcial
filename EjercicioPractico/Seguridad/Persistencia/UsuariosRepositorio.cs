@@ -48,7 +48,7 @@ namespace Seguridad.Persistencia
                 Apellido = "Saavedra",
                 Nombre = "Lucas",
                 Email = "lucas@saavedra.com",
-                Password = "qwer"
+                Password = "lucas"
             };
             usuarios.Add(user1);
 
