@@ -1,0 +1,44 @@
+﻿@using BlazorApp1.DTOs
+@using Microsoft.AspNetCore.Components.Authorization
+
+@page "/login"
+@inject NavigationManager Navigation
+@inject CustomAuthStateProvider authStateProvider
+@inject HttpClient Http
+
+<h3>Login</h3>
+
+<div class="mb-3">
+    <label for="email" class="form-label">Email address</label>
+    <input type="email" class="form-control" @bind="email" />
+</div>
+<div class="mb-3">
+    <label for="password" class="form-label">Password</label>
+    <input type="password" class="form-control" @bind="password" />
+</div>
+<button class="btn btn-primary" @onclick="HandleLogin">Login</button>
+@if (showError)
+{
+    <div class="text-danger">Usuario y/o contraseña incorrecto</div>
+}
+
+@code {
+    private string email;
+    private string password;
+    private bool showError = false;
+
+    private async Task HandleLogin()
+    {
+        showError = false;
+        var usuario = await Http.GetFromJsonAsync<Usuario>($"https://localhost:7159/Usuarios/login?user={email}&password={password}");
+        if (usuario!=null && usuario.UserGuid != Guid.Empty)
+        {
+            authStateProvider.MarkUserAsAuthenticated(usuario);
+            Navigation.NavigateTo("/");
+        }
+        else
+        {
+            showError = true;
+        }
+    }
+}
