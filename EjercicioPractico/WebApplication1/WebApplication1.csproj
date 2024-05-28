@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\BusinessLayer\BusinessLayer.csproj" />
     <ProjectReference Include="..\DomainModel\DomainModel.csproj" />
+    <ProjectReference Include="..\Seguridad\Seguridad.csproj" />
   </ItemGroup>
 
 </Project>

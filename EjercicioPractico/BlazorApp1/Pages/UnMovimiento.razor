@@ -3,6 +3,9 @@
 @inject HttpClient Http
 @inject NavigationManager navigationManager
 @inject IJSRuntime JS
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
+@inject AuthenticationStateProvider authenticationStateProvider
 
 @if (depositoOrigen != null)
 {
@@ -101,6 +104,7 @@
     [Parameter]
     public string Id { get; set; }
 
+    private ClaimsPrincipal user;
     private Deposito? depositoOrigen;
     private Movimiento unMovimiento;
     private List<Establecimiento>? destinos = null;
@@ -114,6 +118,9 @@
 
         unMovimiento = new Movimiento();
         unMovimiento.Detalle = new List<StockItem>();
+
+        var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
+        user = authState.User;
     }
 
     protected void AgregarProductoAlEnvío(StockItem unItem)
@@ -153,11 +160,24 @@
     {
         if (destinoSeleccionado > 0)
         {
+            string userGuid = user.FindFirst(ClaimTypes.NameIdentifier)!.Value;
+
             var json = System.Text.Json.JsonSerializer.Serialize(unMovimiento.Detalle);
             var jsonString = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
             string paramDestino = tipoDestinoSeleccionado == "D" ? "&IdDepositoDestino=" : "&IdTiendaDestino=";
             paramDestino += destinoSeleccionado.ToString();
-            await Http.PostAsync("https://localhost:7159/Movimiento?IdOrigen=" + Id + paramDestino, jsonString);
+            //await Http.PostAsync("https://localhost:7159/Movimiento?IdOrigen=" + Id + paramDestino, jsonString);
+            var requestMessage = new HttpRequestMessage()
+                {
+                    Method = new HttpMethod("POST"),
+                    RequestUri = new Uri("https://localhost:7159/Movimiento?IdOrigen=" + Id + paramDestino),
+                    Content = jsonString,
+                };
+            requestMessage.Content.Headers.TryAddWithoutValidation("userGuid", userGuid);
+            var response = await Http.SendAsync(requestMessage);
+            //var responseStatusCode = response.StatusCode;
+            var responseBody = await response.Content.ReadAsStringAsync();
+            
             Cancel();
         }
     }

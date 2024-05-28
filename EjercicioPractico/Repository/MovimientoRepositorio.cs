@@ -44,7 +44,13 @@ namespace Repository
             List<Tienda> tiendas = new TiendaRepositorio().ObtenerTodos().ToList();
             List<Producto> productos = new ProductoRepositorio().ObtenerTodos().ToList();
             Usuario unUsuario = new Usuario() { 
-                Nombre = "Lucas"
+                Nombre = "Lucas",
+                Apellido = "Saavedra"
+            };
+            Usuario otroUsuario = new Usuario()
+            {
+                Nombre = "Valeria",
+                Apellido = "Selva"
             };
 
             List<Movimiento> movs = new List<Movimiento>();
@@ -83,7 +89,7 @@ namespace Repository
                 Destino = tiendas.First(),
                 Fecha = DateTime.Now.AddDays(-19),
                 Detalle = detalleB,
-                Responsable = unUsuario
+                Responsable = otroUsuario
             };
             movs.Add(mov2);
 
@@ -94,7 +100,7 @@ namespace Repository
                 Destino = depositos.Last(),
                 Fecha = DateTime.Now.AddDays(-17),
                 Detalle = detalleA,
-                Responsable = unUsuario
+                Responsable = otroUsuario
             };
             movs.Add(mov3);
 
@@ -105,7 +111,7 @@ namespace Repository
                 Destino = depositos.Last(),
                 Fecha = DateTime.Now.AddDays(-17),
                 Detalle = detalleB,
-                Responsable = unUsuario
+                Responsable = otroUsuario
             };
             movs.Add(mov4);
 

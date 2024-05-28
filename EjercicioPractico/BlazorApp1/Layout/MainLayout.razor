@@ -1,4 +1,11 @@
-﻿@inherits LayoutComponentBase
+﻿
+@inherits LayoutComponentBase
+@inject NavigationManager navigation
+@inject CustomAuthStateProvider authStateProvider
+@inject AuthenticationStateProvider authenticationStateProvider
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
+
 <div class="page">
     <div class="sidebar">
         <NavMenu />
@@ -6,7 +13,16 @@
 
     <main>
         <div class="top-row px-4">
-            <a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>
+            <!--<a href="https://learn.microsoft.com/aspnet/core/" target="_blank">About</a>-->
+            @if (user != null && user.Identity != null && user.Identity.IsAuthenticated)
+            {
+                <span>Welcome, @user.Identity.Name!</span>
+                <button class="btn btn-link" @onclick="Logout">Salir</button>
+            }
+            else
+            {
+                <button class="btn btn-link" @onclick="NavigateToLogin">Ingresar</button>
+            }
         </div>
 
         <article class="content px-4">
@@ -14,3 +30,40 @@
         </article>
     </main>
 </div>
+
+@code{
+    private ClaimsPrincipal user;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await authenticationStateProvider.GetAuthenticationStateAsync();
+        //var user = authState.User;
+
+        authenticationStateProvider.AuthenticationStateChanged += AuthStateChanged;
+    }
+
+    private async void AuthStateChanged(Task<AuthenticationState> task)
+    {
+        var authState = await task;
+        user = authState.User;
+        StateHasChanged(); // Force UI to refresh
+    }
+
+    public void Dispose()
+    {
+        authenticationStateProvider.AuthenticationStateChanged -= AuthStateChanged;
+    }
+
+    private void NavigateToLogin()
+    {
+        navigation.NavigateTo("/login");
+    }
+
+    private void Logout()
+    {
+        authStateProvider.MarkUserAsLoggedOut();
+        user = new ClaimsPrincipal(new ClaimsIdentity());
+        StateHasChanged(); // Force UI to refresh
+        navigation.NavigateTo("/");
+    }
+}
